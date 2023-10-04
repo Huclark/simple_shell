@@ -8,6 +8,7 @@
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Contributing](#contributing)
+- [License](#license)
 
 ## About
 
@@ -96,3 +97,7 @@ You need a good understanding of the following:
 This is a team project with the following contributors:
   - [Huclark Vanderpuye](https://github.com/Huclark) <br/>
   - [Charles Anderson](https://github.com/Charles130-Anderson)
+
+### License
+
+This project is licensed under the GNU General Public License (GPL). See LICENSE file for details.

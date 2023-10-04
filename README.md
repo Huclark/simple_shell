@@ -69,6 +69,8 @@ You need a good understanding of the following:
 
 - [Arrays]
 - [Structures & Typedef]
+- [Linked Lists]
+- [C-Files Input/Output]
 - [Pointers]
 - [Function Pointers]
 - [Command-line arguments (Argv & Argc)]
@@ -92,6 +94,5 @@ You need a good understanding of the following:
 ### Contributions
 
 This is a team project with the following contributors:
-  - Huclark Vanderpuye (@Huclark)
-  - Charles Anderson  (Charles130-Anderson)
-
+  - [Huclark Vanderpuye](https://github.com/Huclark) <br/>
+  - [Charles Anderson](https://github.com/Charles130-Anderson)

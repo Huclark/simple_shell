@@ -106,7 +106,7 @@ char *stringconcat(char *target, char *source)
 * Return: A pointer to the target string
 */
 
-char *stringdup(char *source)
+char *stringdup(const char *source)
 {
 	int len = 0, idx;
 	char *target;

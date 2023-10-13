@@ -100,4 +100,4 @@ This is a team project with the following contributors:
 Since this is a team project for ALX SE Progamme, we won't be accepting any pull requests. However, please feel free to make or suggest any changes that would make the whole code run better. See [AUTHORS](AUTHORS) for our emails to reach us.
 
 ## License
-This code is in the public domain (see [UNLICENSE](UNLICENSE) for more details). This means you can use, modify, and distribute it without any restriction. I appreciate, but don't require, acknowledgement in derivative works.
+This code is in the public domain (see [UNLICENSE](UNLICENSE) for more details). This means you can use, modify, and distribute it without any restriction. We appreciate, but don't require, acknowledgement in derivative works.

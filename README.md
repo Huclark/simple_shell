@@ -94,8 +94,8 @@ This is a school project and it is built to meet the requirements of the project
 
 ## Contributions
 This is a team project with the following contributors:
-  - [Huclark Vanderpuye](https://github.com/Huclark) <br/>
-  - [Charles Anderson](https://github.com/Charles130-Anderson)
+  - [Huclark Vanderpuye](https://github.com/Huclark): vhuclark@gmail.com <br/>
+  - [Charles Anderson](https://github.com/Charles130-Anderson): andersonoyoo034@gmail.com
 
 Since this is a team project for ALX SE Progamme, we won't be accepting any pull requests. However, please feel free to make or suggest any changes that would make the whole code run better. See [AUTHORS](AUTHORS) for our emails to reach us.
 

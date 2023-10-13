@@ -1,15 +1,17 @@
 #include "shell.h"
 
 /**
- * main - main function for shell program
- * @argc: Number of argument vectors
- * @argv: Argument vector
- * Return: 0 if successful or 1 if otherwise
+* main - main function for shell program
+* Return: Always return 0 on success.
+* @argc: Argument count
+* @argv: Argument vector
 */
 
 int main(int argc, char **argv)
 {
-	shell_loop();
+	(void)argc;
+
+	shell_loop(argv);
 
 	return (EXIT_SUCCESS);
 }

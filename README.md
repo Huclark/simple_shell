@@ -17,7 +17,7 @@ This project builds a simpler version of the `shell`. It is limited in functions
 
 ## Objectives
 
-- Develop a custom `simple shell` that emulates the functionality 
+- Develop a custom `simple shell` that emulates the functionality
 of the original `shell`.
 - Deepen your understanding of the `C-programming language` and `Shell`.
 - What is a `pid` and a `ppid`?

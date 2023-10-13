@@ -9,18 +9,28 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <termios.h>
 
 
-/* External environmental variable (Global Variable) */
-extern char **environ; /* Standard library variable */
+/* Global Variables */
+extern char **environ; /* For environment variable */
+
+/**
+ * struct term_settings - Struct to store the terminal settings
+ * @original: Original terminal settings
+*/
+typedef struct term_settings
+{
+	struct termios original;
+} terminal_set;
 
 
 /* Custom prototype for Loop function */
-void shell_loop(void);
+void shell_loop(char **argv);
 char *shell_getline(void);
 char **parse_line(char *cli_arg);
-int shell_exec(char **argv_tkn);
-int fork_cmd(char **argv_tkn);
+int shell_exec(char **argv_tkn, char **argv, int line_count);
+int fork_cmd(char **argv_tkn, char **argv, int line_count);
 int shell_exit(char **argv_tkn);
 int shell_cd(char **argv_tkn);
 
@@ -31,49 +41,52 @@ int stringcompare(char *string1, char *string2);
 int stringlength(char *str);
 char *stringconcat(char *target, char *source);
 char *stringdup(const char *source);
-int atoi_(char *string);
-int check_for_alphabet(int ch);
-char *prefix_checker(const char *prefix, const char *string);
-int delim_checker(char ch, char *delimiter);
-char **strtok_delims(char *string, char *delim);
-char **strtok_delim(char *string, char delim);
+char *delim_checker(char *string, int delimiter);
+char *strtok_delims(char *string, char *delim);
 char *string_n_copy(char *target, char *source, int bytes);
 char *string_n_concat(char *target, char *source, int bytes);
-char *find_char(char *string, char ch);
-char *pathstring_cpy(char *pathsring, int idx_1, int idx_2);
 int string_n_cmp(const char *string1, const char *string2, int n);
+int sh_getchar(void);
+char *find_char(char *string, char ch);
+char *itostr(int num);
+
+
+/* int word_counter(char *string, char *delim); */
 
 
 /* Custom prototypes for print functions */
 int put_char(char ch);
-int e_put_char(char ch);
 void cust_puts(char *string);
-void e_cust_puts(char *string);
-int print_numbers(int num, int file_desc);
-int puts_file_desc(char *string, int file_desc);
-int put_file_desc(char ch, int file_desc);
+void error_output(char *prog_name, char **argv_tkn,
+					char *error_msg, int line_no);
 
 
 /* Custom prototypes for memory functions */
 void free_str(char **str);
 void *shell_realloc(void *prev_mem_ptr, unsigned int prev_size,
 					unsigned int curr_size);
-char *memory_fill(char *mem_address, char content, unsigned int bytes);
+
 
 /* Custom prototypes for environment variables functions */
-int shell_setenv(const char *var_name, char *value, int flag);
+int shell_setenv(char *var_name, char *value, int flag);
 char **shell_env(void);
-char *shell_getenv(const char *var_name);
-int add_shell_env(const char *var_name, char *value);
-int check_env_exist(const char *var_name);
-char *create_env_string(const char *var_name, char *value);
-int shell_unsetenv(const char *var_name);
+char *shell_getenv(char *var_name);
+int add_shell_env(char *var_name, char *value);
+int check_env_exist(char *var_name);
+char *create_env_string(char *var_name, char *value);
+int shell_unsetenv(char *var_name);
+char *find_command(char **argv_tkn);
+
+/* Custom prototypes for functions that handle terminal settings*/
+void set_terminal_mode(terminal_set *term);
+void reset_terminal_mode(struct term_settings *term);
 
 
 /* MACROS */
 #define READ_BUFFER		1024
 #define TOKEN_BUFFER	512
 #define DELIMITERS		" \t\r\n\a"
-
+#define BUFFER_SIZE_W	1024
+#define EMPTY_BUFFER	-1
 
 #endif

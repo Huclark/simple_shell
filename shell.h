@@ -33,6 +33,8 @@ int shell_exec(char **argv_tkn, char **argv, int line_count);
 int fork_cmd(char **argv_tkn, char **argv, int line_count);
 int shell_exit(char **argv_tkn);
 int shell_cd(char **argv_tkn);
+int child_process(char **argv_tkn, char **argv,
+					char *fullpath, int line_count);
 
 
 /* Custom prototypes for string functions */

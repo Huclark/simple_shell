@@ -181,44 +181,14 @@ int shell_exec(char **argv_tkn, char **argv, int line_count)
 int fork_cmd(char **argv_tkn, char **argv, int line_count)
 {
 	char *fullpath = find_command(argv_tkn);
-	int ret_status;
-	pid_t child_process = fork();
 
+	if (fullpath == NULL && find_char(argv_tkn[0], '/') == NULL)
+	{
+		error_output(argv[0], argv_tkn, "not found", line_count);
+		return (1);
+	}
 
-	if (child_process == -1)
-		perror("Fork failed");
-	if (child_process == 0)
-	{
-		if (find_char(argv_tkn[0], '/') == NULL)
-		{
-			if (execve(fullpath, argv_tkn, shell_env()) == -1)
-			{
-				if (errno == EACCES)
-					perror("Permission denied for execve");
-				else
-					error_output(argv[0], argv_tkn, "not found", line_count);
-				exit(EXIT_FAILURE);
-			}
-		}
-		else
-		{
-			if (execve(argv_tkn[0], argv_tkn, shell_env()) == -1)
-			{
-				if (errno == EACCES)
-					perror("Permission denied for execve");
-				else
-					error_output(argv[0], argv_tkn, "not found", line_count);
-				exit(EXIT_FAILURE);
-			}
-		}
-	}
-	else
-	{
-		do {
-			waitpid(child_process, &ret_status, WUNTRACED);
-		} while (!WIFEXITED(ret_status) && !WIFSIGNALED(ret_status));
-		free(fullpath);
-	}
-	return (1);
+	return (child_process(argv_tkn, argv, fullpath, line_count));
 }
+
 

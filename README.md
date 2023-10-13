@@ -1,11 +1,7 @@
 # Simple Shell Project
-======================
-
 ![alt text](https://s3.amazonaws.com/intranet-projects-files/holbertonschool-low_level_programming/235/shell.jpeg)
 
 ## Table of Contents
---------------------
-
 - [About](#about)
 - [Objective](#objective)
 - [Features](#features)
@@ -16,14 +12,10 @@
 - [License](#license)
 
 ## About
---------
-
 The `shell` is a command-line interface ( a program) that provides a user interface to interact with an operating system's kernel or execute commands. The `shell` acts as a bridge between the user and the operating system.
 This project is a simple implementation of a `shell` in C. It illustrates how the shell works i.e. `read`, `parse`, `fork`, `exec` and `wait`. It is limited in functions as it is built to only meet the requirements given by ALX.
 
 ## Objectives
--------------
-
 - Develop a custom `simple shell` that emulates the functionality
 of the original `shell`.
 - Deepen your understanding of the `C-programming language` and `Shell`.
@@ -38,8 +30,7 @@ of the original `shell`.
 - What is `EOF` / “end-of-file”?
 
 ## Features
------------
-##### List of allowed functions and system calls
+### List of allowed functions and system calls
 - `access` (man 2 access)
 - `chdir` (man 2 chdir)
 - `close` (man 2 close)
@@ -72,10 +63,8 @@ of the original `shell`.
 - `wait4` (man 2 wait4)
 - `write` (man 2 write)
 
-### Prerequisites
------------------
+## Prerequisites
 The only prerquisite is to clone this repo. However, you need a good understanding of the following:
-
 - [Pointers & Arrays]
 - [Structures & Typedef]
 - [Function Pointers]
@@ -88,9 +77,7 @@ The only prerquisite is to clone this repo. However, you need a good understandi
 - [getline()]
 - [strtok]
 
-### Installation
-----------------
-
+## Installation
 1. Clone the repository:
 
    ```bash
@@ -101,20 +88,16 @@ The only prerquisite is to clone this repo. However, you need a good understandi
 3. Use `./hsh` to run.
 
 
-### Limitations
----------------
+## Limitations
 This is a school project and it is built to meet the requirements of the project. It has many limitations including:
 - Only built-ins are `cd`, `exit`, `env`
 
-### Contributions
------------------
+## Contributions
 This is a team project with the following contributors:
   - [Huclark Vanderpuye](https://github.com/Huclark) <br/>
   - [Charles Anderson](https://github.com/Charles130-Anderson)
 
 Since this is a team project for ALX SE Progamme, we won't be accepting any pull requests. However, please feel free to make or suggest any changes that would make the whole code run better. See [AUTHORS](AUTHORS) for our emails to reach us.
 
-### License
------------
-
+## License
 This code is in the public domain (see [UNLICENSE](UNLICENSE) for more details). This means you can use, modify, and distribute it without any restriction. I appreciate, but don't require, acknowledgement in derivative works.

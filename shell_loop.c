@@ -30,7 +30,7 @@ void shell_loop(char **argv)
 	{
 		cli_arg = shell_getline();
 		arg_parse = parse_line(cli_arg);
-		loop_status = shell_exec(arg_parse, argv, line_count);
+		shell_exec(arg_parse, argv, line_count);
 
 		free(cli_arg);
 		free(arg_parse);
@@ -180,15 +180,41 @@ int shell_exec(char **argv_tkn, char **argv, int line_count)
 */
 int fork_cmd(char **argv_tkn, char **argv, int line_count)
 {
+	int ret_status;
 	char *fullpath = find_command(argv_tkn);
+	pid_t child_process;
 
-	if (fullpath == NULL && find_char(argv_tkn[0], '/') == NULL)
+	if (fullpath == NULL)
 	{
-		error_output(argv[0], argv_tkn, "not found", line_count);
+		if (isatty(STDIN_FILENO))
+		{
+			cust_puts(argv[0]);
+			cust_puts(": No such file or directory\n");
+		}
+		else
+			error_output(argv[0], argv_tkn, "not found", line_count);
 		return (1);
 	}
 
-	return (child_process(argv_tkn, argv, fullpath, line_count));
+	child_process = fork();
+
+	if (child_process == -1)
+		perror("Fork failed");
+	if (child_process == 0)
+	{
+		if (execve(fullpath, argv_tkn, shell_env()) == -1)
+		{
+			if (errno == EACCES)
+				perror("Permission denied for execve");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		do {
+			waitpid(child_process, &ret_status, WUNTRACED);
+		} while (!WIFEXITED(ret_status) && !WIFSIGNALED(ret_status));
+	}
+	free(fullpath);
+	return (1);
 }
-
-

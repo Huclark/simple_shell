@@ -43,19 +43,11 @@ void cust_puts(char *string)
 void error_output(char *prog_name, char **argv_tkn,
 					char *error_msg, int line_no)
 {
-	int len = 0;
-
-	while (*argv_tkn != NULL)
-	{
-		len++;
-		argv_tkn++;
-	}
-
 	cust_puts(prog_name);
 	cust_puts(": ");
 	put_char(line_no + '0');
 	cust_puts(": ");
-	cust_puts(argv_tkn[len - 2]);
+	cust_puts(argv_tkn[0]);
 	cust_puts(": ");
 	cust_puts(error_msg);
 	put_char('\n');

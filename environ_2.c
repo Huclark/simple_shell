@@ -73,46 +73,49 @@ int shell_unsetenv(char *var_name)
 */
 char *find_command(char **argv_tkn)
 {
-	char *cmd_token, *cmd_dir, *cmd_path, *path_cpy, *path = shell_getenv("PATH");
+	char *cmd_dir, *cmd_path, *path_cpy, *path = shell_getenv("PATH");
 
-	if (path == NULL)
-		return (NULL);
-	path_cpy = stringdup(path);
-	if (path_cpy == NULL)
-		return (NULL);
-	cmd_token = (char *)malloc(stringlength(argv_tkn[0]) + 1);
-	if (cmd_token == NULL)
+	if (find_char(argv_tkn[0], '/') != NULL)
 	{
-		free(path_cpy);
-		return (NULL);
-	}
-	stringcopy(cmd_token, argv_tkn[0]);
-	cmd_dir = strtok_delims(path_cpy, ":");
-	while (cmd_dir != NULL)
-	{
-		cmd_path = (char *)malloc(stringlength(cmd_dir) +
-					stringlength(cmd_token) + 2);
+		cmd_path = stringdup(argv_tkn[0]);
 		if (cmd_path == NULL)
-		{
-			free(cmd_token);
-			free(path_cpy);
 			return (NULL);
-		}
-		stringcopy(cmd_path, cmd_dir);
-		stringconcat(cmd_path, "/");
-		stringconcat(cmd_path, cmd_token);
 		if (access(cmd_path, X_OK) == 0)
-		{
-			free(cmd_token);
-			free(path_cpy);
 			return (cmd_path);
-		}
-		free(cmd_path);
-		cmd_dir = strtok_delims(NULL, ":");
 	}
-	free(cmd_token);
-	free(path_cpy);
+	else
+	{
+		if (path == NULL)
+			return (NULL);
+		path_cpy = stringdup(path);
+		if (path_cpy == NULL)
+			return (NULL);
+		cmd_dir = strtok_delims(path_cpy, ":");
+		while (cmd_dir != NULL)
+		{
+			cmd_path = malloc(stringlength(cmd_dir) + stringlength(argv_tkn[0]) + 2);
+			if (cmd_path == NULL)
+			{
+				free(path_cpy);
+				return (NULL);
+			}
+			stringcopy(cmd_path, cmd_dir);
+			stringconcat(cmd_path, "/");
+			stringconcat(cmd_path, argv_tkn[0]);
+			if (access(cmd_path, X_OK) == 0)
+			{
+				free(path_cpy);
+				return (cmd_path);
+			}
+			free(cmd_path);
+			cmd_dir = strtok_delims(NULL, ":");
+		}
+		free(path_cpy);
+	}
 	return (NULL);
 }
 
 
+/**
+*
+*/

@@ -82,6 +82,8 @@ int check_env_exist(char *var_name);
 char *create_env_string(char *var_name, char *value);
 int shell_unsetenv(char *var_name);
 char *find_command(char **argv_tkn);
+char *find_exec_in_path(char *dir, char *command);
+
 
 /* Custom prototypes for functions that handle terminal settings*/
 void set_terminal_mode(terminal_set *term);

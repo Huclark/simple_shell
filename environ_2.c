@@ -82,9 +82,18 @@ char *find_command(char **argv_tkn)
 			return (NULL);
 		if (access(cmd_path, X_OK) == 0)
 			return (cmd_path);
+		free(cmd_path);
 	}
 	else
 	{
+		cmd_path = malloc(stringlength(argv_tkn[0]) + 3);
+		if (cmd_path == NULL)
+			return (NULL);
+		stringcopy(cmd_path, "./");
+		stringconcat(cmd_path, argv_tkn[0]);
+		if (access(cmd_path, X_OK) == 0)
+			return (cmd_path);
+		free(cmd_path);
 		if (path == NULL)
 			return (NULL);
 		path_cpy = stringdup(path);
@@ -93,25 +102,43 @@ char *find_command(char **argv_tkn)
 		cmd_dir = strtok_delims(path_cpy, ":");
 		while (cmd_dir != NULL)
 		{
-			cmd_path = malloc(stringlength(cmd_dir) + stringlength(argv_tkn[0]) + 2);
-			if (cmd_path == NULL)
-			{
-				free(path_cpy);
-				return (NULL);
-			}
-			stringcopy(cmd_path, cmd_dir);
-			stringconcat(cmd_path, "/");
-			stringconcat(cmd_path, argv_tkn[0]); /*null terminate*/
-			if (access(cmd_path, X_OK) == 0)
+			cmd_path = find_exec_in_path(cmd_dir, argv_tkn[0]);
+			if (cmd_path != NULL)
 			{
 				free(path_cpy);
 				return (cmd_path);
 			}
-			free(cmd_path);
 			cmd_dir = strtok_delims(NULL, ":");
 		}
 		free(path_cpy);
 	}
 	return (NULL);
 }
+
+
+/**
+ * find_exec_in_path - Finds an executable in path
+ * @dir: The directory to search
+ * @command: The command to find
+ * Return: The full path to the command if found or NULL if otherwise
+*/
+char *find_exec_in_path(char *dir, char *command)
+{
+	char *cmd_path = malloc(stringlength(dir) + stringlength(command) + 2);
+
+	if (cmd_path == NULL)
+		return (NULL);
+
+	stringcopy(cmd_path, dir);
+	stringconcat(cmd_path, "/");
+	stringconcat(cmd_path, command);
+
+	if (access(cmd_path, X_OK) == 0)
+		return (cmd_path);
+
+	free(cmd_path);
+	return (NULL);
+}
+
+
 

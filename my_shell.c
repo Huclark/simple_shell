@@ -10,8 +10,6 @@
 int main(int argc, char **argv)
 {
 	(void)argc;
-
-	shell_loop(argv);
-
-	return (EXIT_SUCCESS);
+	
+	return (shell_loop(argv));
 }

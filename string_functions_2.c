@@ -108,3 +108,41 @@ char *itostr(int num)
 }
 
 
+/**
+ * atoi_ - Converts a string to an integer
+ * @string: String to convert to integeger
+ * Return: The number converted from the string
+ *         0 if no number is found
+*/
+int atoi_(char *string)
+{
+	int idx = 0, d = 0, n = 0, length = 0, f = 0, digit = 0;
+
+	while (string[length] != '\0')
+		length++;
+
+	while (idx < length && f == 0)
+	{
+		if (string[idx] == '-')
+			++d;
+
+		if (string[idx] >= '0' && string[idx] <= '9')
+		{
+			digit = string[idx] - '0';
+			if (d % 2)
+				digit = -digit;
+			n = n * 10 + digit;
+			f = 1;
+			if (string[idx + 1] < '0' || string[idx + 1] > '9')
+				break;
+			f = 0;
+		}
+		idx++;
+	}
+
+	if (f == 0)
+		return (0);
+
+	return (n);
+}
+

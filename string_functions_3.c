@@ -96,3 +96,20 @@ char *find_char(char *string, char ch)
 	return (NULL);
 }
 
+
+/**
+ * is_digit - Checks if a character is a digit
+ * @ch: Character to inspect
+ * Return: 1 if character is digit
+ *         0 if otherwise
+*/
+int is_digit(int ch)
+{
+	if (ch >= '0' && ch <= '9')
+		return (1);
+	else
+		return (0);
+}
+
+
+

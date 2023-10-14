@@ -52,3 +52,27 @@ void error_output(char *prog_name, char **argv_tkn,
 	cust_puts(error_msg);
 	put_char('\n');
 }
+
+
+/**
+ * error_output - Prints the same error output as sh (/bin/sh) for "exit"
+ * @prog_name: Program name
+ * @argv_tkn: Null-terminated array of command and parameters
+ * @error_msg: The error message string
+ * @line_no: Number of lines processed
+*/
+void exit_error_output(char *prog_name, char **argv_tkn,
+					char *error_msg, int line_no)
+{
+	cust_puts(prog_name);
+	cust_puts(": ");
+	put_char(line_no + '0');
+	cust_puts(": ");
+	cust_puts(argv_tkn[0]);
+	cust_puts(": ");
+	cust_puts(error_msg);
+	cust_puts(": ");
+	cust_puts(argv_tkn[1]);
+	put_char('\n');
+}
+

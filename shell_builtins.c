@@ -3,12 +3,34 @@
 /**
 * shell_exit - Handles the exit built-in command
 * @argv_tkn: Null-terminated list of commands and parameters
-* Return: 0 to exit shell
+* Return: 0 if there is no argument to "exit"
+*         1 if argument is invalid in interactive mode
+*         2 if argument is invalid in non-interactive mode
+*         Exit status if a valid argument is passed to "exit"
 */
-int shell_exit(char **argv_tkn)
+int shell_exit(char **argv, char **argv_tkn, int line_count)
 {
-	(void)argv_tkn;
-	return (0);
+	char *num_string;
+	if (argv_tkn[1] != NULL)
+	{
+		num_string = argv_tkn[1];
+
+		while (*num_string != '\0')
+		{
+			if (is_digit(*num_string) == 0)
+			{
+				exit_error_output(argv[0], argv_tkn, "Illegal number", line_count);
+				if (isatty(STDIN_FILENO))
+					return (1);
+				else
+					return (2);
+			}
+			num_string++;
+		}
+		return (atoi_(argv_tkn[1]));
+	}
+	else
+		return (0);
 }
 
 

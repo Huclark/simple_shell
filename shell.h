@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <termios.h>
+#include <limits.h>
 
 
 /* Global Variables */
@@ -26,12 +27,12 @@ typedef struct term_settings
 
 
 /* Custom prototype for Loop function */
-void shell_loop(char **argv);
+int shell_loop(char **argv);
 char *shell_getline(void);
 char **parse_line(char *cli_arg);
 int shell_exec(char **argv_tkn, char **argv, int line_count);
 int fork_cmd(char **argv_tkn, char **argv, int line_count);
-int shell_exit(char **argv_tkn);
+int shell_exit(char **argv, char **argv_tkn, int line_count);
 int shell_cd(char **argv_tkn);
 int child_process(char **argv_tkn, char **argv,
 					char *fullpath, int line_count);
@@ -51,7 +52,8 @@ int string_n_cmp(const char *string1, const char *string2, int n);
 int sh_getchar(void);
 char *find_char(char *string, char ch);
 char *itostr(int num);
-
+int atoi_(char *string);
+int is_digit(int ch);
 
 /* int word_counter(char *string, char *delim); */
 
@@ -60,6 +62,8 @@ char *itostr(int num);
 int put_char(char ch);
 void cust_puts(char *string);
 void error_output(char *prog_name, char **argv_tkn,
+					char *error_msg, int line_no);
+void exit_error_output(char *prog_name, char **argv_tkn,
 					char *error_msg, int line_no);
 
 

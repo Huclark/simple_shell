@@ -101,7 +101,7 @@ char *find_command(char **argv_tkn)
 			}
 			stringcopy(cmd_path, cmd_dir);
 			stringconcat(cmd_path, "/");
-			stringconcat(cmd_path, argv_tkn[0]);
+			stringconcat(cmd_path, argv_tkn[0]); /*null terminate*/
 			if (access(cmd_path, X_OK) == 0)
 			{
 				free(path_cpy);
@@ -115,7 +115,3 @@ char *find_command(char **argv_tkn)
 	return (NULL);
 }
 
-
-/**
-*
-*/

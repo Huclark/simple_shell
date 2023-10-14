@@ -5,9 +5,11 @@
  *              Reads and executes command and parameters from command line.
  *              Displays type prompt again each time a
  *               command has been executed.
+ * @argc: Argument count
  * @argv: Argument vector
+ * Return: Loop status
 */
-void shell_loop(char **argv)
+int shell_loop(char **argv)
 {
 	char **arg_parse, *cli_arg;
 	int loop_status, line_count = 1;
@@ -19,21 +21,35 @@ void shell_loop(char **argv)
 		fflush(stdout);
 		cli_arg = shell_getline();
 		arg_parse = parse_line(cli_arg);
-		loop_status = shell_exec(arg_parse, argv, line_count);
 
+		if (stringcompare(arg_parse[0], "exit") == 0)
+			loop_status = shell_exit(argv, arg_parse, line_count);
+		else
+			loop_status = shell_exec(arg_parse, argv, line_count);
 		free(cli_arg);
 		free(arg_parse);
 		line_count++;
-	}	while (loop_status);
+		} while (loop_status == 1);
+		return (loop_status);
 	}
 	else
 	{
 		cli_arg = shell_getline();
 		arg_parse = parse_line(cli_arg);
-		shell_exec(arg_parse, argv, line_count);
-
-		free(cli_arg);
-		free(arg_parse);
+		if (stringcompare(arg_parse[0], "exit") == 0)
+		{
+			loop_status = shell_exit(argv, arg_parse, line_count);
+			free(cli_arg);
+			free(arg_parse);
+			return (loop_status);
+		}
+		else
+		{
+			shell_exec(arg_parse, argv, line_count);
+			free(cli_arg);
+			free(arg_parse);
+			return (EXIT_SUCCESS);
+		}
 	}
 }
 
@@ -137,20 +153,17 @@ char **parse_line(char *cli_arg)
  * @argv_tkn: Null-terminated list of commands and parameters
  * @argv: Argument vector
  * @line_count: The number of lines processed
- * Return: 1 if to continue shell loop
- *         0 to exit shell
+ * Return: Always 1
 */
 int shell_exec(char **argv_tkn, char **argv, int line_count)
 {
 	int idx = 0, builtins_count;
 
 	char *builtins[] = {
-		"exit",
 		"cd",
 	};
 
 	int (*bltin_function[])(char **) = {
-		&shell_exit,
 		&shell_cd,
 	};
 

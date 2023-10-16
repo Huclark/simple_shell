@@ -5,11 +5,11 @@
  *              Reads and executes command and parameters from command line.
  *              Displays type prompt again each time a
  *               command has been executed.
- * @argc: Argument count
  * @argv: Argument vector
+ * @head: Pointer to the head of env_list
  * Return: Loop status
 */
-int shell_loop(char **argv)
+int shell_loop(char **argv, env_list **head)
 {
 	char **arg_parse, *cli_arg;
 	int loop_status, line_count = 1;
@@ -21,11 +21,10 @@ int shell_loop(char **argv)
 		fflush(stdout);
 		cli_arg = shell_getline();
 		arg_parse = parse_line(cli_arg);
-
 		if (stringcompare(arg_parse[0], "exit") == 0)
 			loop_status = shell_exit(argv, arg_parse, line_count);
 		else
-			loop_status = shell_exec(arg_parse, argv, line_count);
+			loop_status = shell_exec(arg_parse, argv, line_count, head);
 		free(cli_arg);
 		free(arg_parse);
 		line_count++;
@@ -45,7 +44,7 @@ int shell_loop(char **argv)
 		}
 		else
 		{
-			shell_exec(arg_parse, argv, line_count);
+			shell_exec(arg_parse, argv, line_count, head);
 			free(cli_arg);
 			free(arg_parse);
 			return (EXIT_SUCCESS);
@@ -153,18 +152,21 @@ char **parse_line(char *cli_arg)
  * @argv_tkn: Null-terminated list of commands and parameters
  * @argv: Argument vector
  * @line_count: The number of lines processed
+ * @head: Pointer to the head of env_list
  * Return: Always 1
 */
-int shell_exec(char **argv_tkn, char **argv, int line_count)
+int shell_exec(char **argv_tkn, char **argv, int line_count, env_list **head)
 {
 	int idx = 0, builtins_count;
 
 	char *builtins[] = {
 		"cd",
+		"env",
 	};
 
-	int (*bltin_function[])(char **) = {
+	int (*bltin_function[])(char **, char **, int, env_list **) = {
 		&shell_cd,
+		&env_builtin,
 	};
 
 	/* User entered an empty comand (empty string or white space) */
@@ -176,10 +178,10 @@ int shell_exec(char **argv_tkn, char **argv, int line_count)
 	while (idx < builtins_count)
 	{
 		if (stringcompare(argv_tkn[0], builtins[idx]) == 0)
-			return ((*bltin_function[idx])(argv_tkn));
+			return ((*bltin_function[idx])(argv, argv_tkn, line_count, head));
 		idx++;
 	}
-	return (fork_cmd(argv_tkn, argv, line_count));
+	return (fork_cmd(argv_tkn, argv, line_count, head));
 }
 
 
@@ -189,12 +191,13 @@ int shell_exec(char **argv_tkn, char **argv, int line_count)
  * @argv_tkn: Null-terminated list of commands and parameters
  * @argv: Argument vector
  * @line_count: The number of lines processed
+ * @head: A pointer to the head of env_list
  * Return: 1 on success, 0 if otherwise
 */
-int fork_cmd(char **argv_tkn, char **argv, int line_count)
+int fork_cmd(char **argv_tkn, char **argv, int line_count, env_list **head)
 {
 	int ret_status;
-	char *fullpath = find_command(argv_tkn);
+	char *fullpath = find_command(argv_tkn, head);
 	pid_t child_process;
 
 	if (fullpath == NULL)
@@ -215,7 +218,7 @@ int fork_cmd(char **argv_tkn, char **argv, int line_count)
 		perror("Fork failed");
 	if (child_process == 0)
 	{
-		if (execve(fullpath, argv_tkn, shell_env()) == -1)
+		if (execve(fullpath, argv_tkn, environ) == -1)
 		{
 			if (errno == EACCES)
 				perror("Permission denied for execve");

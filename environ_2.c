@@ -24,34 +24,35 @@ char *create_env_string(char *var_name, char *value)
 	stringcopy(new_var, var_name);
 
 	/* Add the '=' character */
-	new_var[name_len] = '=';
+	stringconcat(new_var, "=");
 
 	/* Copy the value into the new variable */
-	stringcopy(new_var + name_len + 1, value);
+	stringconcat(new_var, value);
 
 	return (new_var);
 }
 
 
 /**
-* shell_unsetenv - Searches for the environment variable
+* shell_unsetenv - Removes an environment variable
 * @var_name: The environment variable to create
 * Return: 0 on success or -1 on failure
 */
 int shell_unsetenv(char *var_name)
 {
 	int flag, idx, i;
+	char **env_ptr = environ;
 
-	if (!var_name || !environ)
+	if (!var_name || !env_ptr)
 		return (-1);
 
 	flag = -1; /* Initialize to -1 to first indicate not found */
 
 	/* Find environment variable */
-	for (idx = 0 ; environ[idx] != NULL ; idx++)
+	for (idx = 0 ; env_ptr[idx] != NULL ; idx++)
 	{
-		if (string_n_cmp(environ[idx], var_name, stringlength(var_name)) == 0 &&
-			environ[idx][stringlength(var_name)] == '=')
+		if (string_n_cmp(env_ptr[idx], var_name, stringlength(var_name)) == 0 &&
+			env_ptr[idx][stringlength(var_name)] == '=')
 		{
 			flag = idx;
 			break;
@@ -59,8 +60,8 @@ int shell_unsetenv(char *var_name)
 	}
 	if (flag == -1) /* Environment variable not found */
 		return (0);
-	for (i = flag ; environ[i] != NULL ; i++)
-		environ[i] = environ[i + 1];
+	for (i = flag ; env_ptr[i] != NULL ; i++)
+		env_ptr[i] = env_ptr[i + 1];
 
 	return (0);
 }
@@ -69,11 +70,12 @@ int shell_unsetenv(char *var_name)
 /**
 * find_command - Searches PATH to find the full path to the executable command
 * @argv_tkn: Array of nulll-terminated tokens
+* @head: A pointer to the head of env_list
 * Return: The full path to command or Null if command is not found
 */
-char *find_command(char **argv_tkn)
+char *find_command(char **argv_tkn, env_list **head)
 {
-	char *cmd_dir, *cmd_path, *path_cpy, *path = shell_getenv("PATH");
+	char *cmd_dir, *cmd_path, *path_cpy, *path = shell_getenv(head, "PATH");
 
 	if (find_char(argv_tkn[0], '/') != NULL)
 	{
@@ -140,5 +142,27 @@ char *find_exec_in_path(char *dir, char *command)
 	return (NULL);
 }
 
+
+
+/**
+ * find_env_idx - Finds the index of an environment variable
+ *                in the environ array
+ * @var_name: Environment variable prefix
+ * Return: The environment variable's idx in environment array
+ *         -1 if environment variable does not exist
+*/
+int find_env_idx(char *var_name)
+{
+	int idx = 0;
+
+	while (environ[idx] != NULL)
+	{
+		if (string_n_cmp(environ[idx], var_name,
+			stringlength(var_name)) == 0 && environ[idx][stringlength(var_name)] == '=')
+			return (idx);
+		idx++;
+	}
+	return (-1);
+}
 
 

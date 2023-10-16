@@ -25,15 +25,28 @@ typedef struct term_settings
 	struct termios original;
 } terminal_set;
 
+/**
+ * struct env_list - Handles the environment variables
+ * @var_name: Envionment variable name
+ * @var_value: Environment variable value
+ * @next: Pointer to next node or NULL
+*/
+typedef struct env_list
+{
+	char *var_name;
+	char *var_value;
+	struct env_list *next;
+} env_list;
+
 
 /* Custom prototype for Loop function */
-int shell_loop(char **argv);
+int shell_loop(char **argv, env_list **head);
 char *shell_getline(void);
 char **parse_line(char *cli_arg);
-int shell_exec(char **argv_tkn, char **argv, int line_count);
-int fork_cmd(char **argv_tkn, char **argv, int line_count);
+int shell_exec(char **argv_tkn, char **argv, int line_count, env_list **head);
+int fork_cmd(char **argv_tkn, char **argv, int line_count, env_list **head);
 int shell_exit(char **argv, char **argv_tkn, int line_count);
-int shell_cd(char **argv_tkn);
+int shell_cd(char **argv, char **argv_tkn, int line_count, env_list **head);
 int child_process(char **argv_tkn, char **argv,
 					char *fullpath, int line_count);
 
@@ -65,6 +78,9 @@ void error_output(char *prog_name, char **argv_tkn,
 					char *error_msg, int line_no);
 void exit_error_output(char *prog_name, char **argv_tkn,
 					char *error_msg, int line_no);
+void cd_error_output(char *prog_name, char **argv_tkn,
+					char *error_msg, int line_no);
+int print_numbers(int num_to_print);
 
 
 /* Custom prototypes for memory functions */
@@ -74,15 +90,16 @@ void *shell_realloc(void *prev_mem_ptr, unsigned int prev_size,
 
 
 /* Custom prototypes for environment variables functions */
-int shell_setenv(char *var_name, char *value, int flag);
-char **shell_env(void);
-char *shell_getenv(char *var_name);
-int add_shell_env(char *var_name, char *value);
-int check_env_exist(char *var_name);
+env_list *env_list_init(char **environ);
+int shell_setenv(env_list **head, char *var_name, char *value, int flag);
+char **shell_env(env_list **head);
+char *shell_getenv(env_list **head, char *var_name);
 char *create_env_string(char *var_name, char *value);
 int shell_unsetenv(char *var_name);
-char *find_command(char **argv_tkn);
+char *find_command(char **argv_tkn, env_list **head);
 char *find_exec_in_path(char *dir, char *command);
+int env_builtin(char **argv, char **argv_tkn, int line_count, env_list **head);
+int find_env_idx(char *var_name);
 
 
 /* Custom prototypes for functions that handle terminal settings*/

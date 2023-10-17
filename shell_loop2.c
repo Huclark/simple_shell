@@ -77,7 +77,7 @@ int interactive(char **argv)
 			loop_status = shell_exec(arg_parse1, arg_parse2, argv,
 										cli_arg3, line_count);
 
-		free_loop(cli_arg1, cli_arg2, cli_arg3, arg_parse1, arg_parse2);
+		free_loop(&cli_arg1, &cli_arg2, &cli_arg3, &arg_parse1, &arg_parse2);
 
 		line_count++;
 		} while (loop_status == 1);
@@ -97,20 +97,20 @@ int non_interactive(char **argv)
 	int loop_status, line_count = 1;
 
 	cli_arg1 = shell_getline();
-	cli_arg2 = strdup(cli_arg1);
+	cli_arg2 = stringdup(cli_arg1);
 	cli_arg3 = stringdup(cli_arg1);
 	arg_parse1 = parse_line1(cli_arg1);
 	arg_parse2 = parse_line2(cli_arg2);
 	if (stringcompare(arg_parse1[0], "exit") == 0)
 	{
 		loop_status = shell_exit(argv, arg_parse1, line_count);
-		free_loop(cli_arg1, cli_arg2, cli_arg3, arg_parse1, arg_parse2);
+		free_loop(&cli_arg1, &cli_arg2, &cli_arg3, &arg_parse1, &arg_parse2);
 		return (loop_status);
 	}
 	else
 	{
 		shell_exec(arg_parse1, arg_parse2, argv, cli_arg3, line_count);
-		free_loop(cli_arg1, cli_arg2, cli_arg3, arg_parse1, arg_parse2);
+		free_loop(&cli_arg1, &cli_arg2, &cli_arg3, &arg_parse1, &arg_parse2);
 		return (EXIT_SUCCESS);
 	}
 }

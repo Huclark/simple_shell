@@ -127,7 +127,7 @@ char **parse_line1(char *cli_arg)
 int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 				char *cli_arg, int line_count)
 {
-	int idx = 0, builtins_count;
+	int idx = 0, builtins_count, status;
 
 	char *builtins[] = {
 		"cd",
@@ -147,7 +147,10 @@ int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 	while (idx < builtins_count)
 	{
 		if (stringcompare(argv_tkn1[0], builtins[idx]) == 0)
-			return ((*bltin_function[idx])(argv, argv_tkn1, line_count));
+		{
+			status = (*bltin_function[idx])(argv, argv_tkn1, line_count);
+			return (status);
+		}
 		idx++;
 	}
 
@@ -161,6 +164,7 @@ int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 	}
 	else
 		fork_cmd(argv_tkn1, argv, line_count);
+
 	return (1);
 }
 

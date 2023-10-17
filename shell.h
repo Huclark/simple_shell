@@ -40,6 +40,11 @@ int child_process(char **argv_tkn, char **argv,
 					char *fullpath, int line_count);
 int interactive(char **argv);
 int non_interactive(char **argv);
+ssize_t _getline(char **buffer, size_t *n, int file_desc);
+ssize_t fetch_input(int file_desc);
+ssize_t refill_line(char **buffer, size_t *n);
+
+
 
 /* Custom prototypes for string functions */
 char *stringcopy(char *target, char *source);
@@ -77,8 +82,11 @@ int print_numbers(int num_to_print, int file_desc);
 void free_str(char **str);
 void *shell_realloc(void *prev_mem_ptr, unsigned int prev_size,
 					unsigned int curr_size);
-void free_loop(char *cli_arg1, char *cli_arg2, char *clin_arg3,
-				char **arg_parse1, char **arg_parse2);
+void free_loop(char **cli_arg1, char **cli_arg2, char **cli_arg3,
+				char ***arg_parse1, char ***arg_parse2);
+void free_exec(char *cli_arg, char **arg_parse1,
+				char **arg_parse2);
+
 
 
 /* Custom prototypes for environment variables functions */

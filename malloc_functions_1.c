@@ -1,8 +1,8 @@
 #include "shell.h"
 
 /**
- * free_str - Ensures that strings pointers are freed properly
- * @str: A pointer to a pointer to a string
+* free_str - Ensures that strings pointers are freed properly
+* @str: A pointer to a pointer to a string
 */
 
 void free_str(char **str)
@@ -21,11 +21,11 @@ void free_str(char **str)
 
 
 /**
- * shell_realloc - Replicates realloc function
- * @prev_mem_ptr: Pointer to previously allocated memory
- * @prev_size: size of previous memory
- * @curr_size: size of current memory
- * Return: pointer to old memory block
+* shell_realloc - Replicates realloc function
+* @prev_mem_ptr: Pointer to previously allocated memory
+* @prev_size: size of previous memory
+* @curr_size: size of current memory
+* Return: pointer to old memory block
 */
 
 void *shell_realloc(void *prev_mem_ptr, unsigned int prev_size,
@@ -57,19 +57,41 @@ void *shell_realloc(void *prev_mem_ptr, unsigned int prev_size,
 
 
 /**
- * free_loop - Frees memory in shell_loop
- * @cli_arg1: cli_arg1
- * @cli_arg2: cli_arg2
- * @cli_arg3: cli_arg3
- * @arg_parse1: arg_parse1
- * @arg_parse2: arge_parse2
+* free_loop - Frees memory in shell_loop
+* @cli_arg1: cli_arg1
+* @cli_arg2: cli_arg2
+* @cli_arg3: cli_arg3
+* @arg_parse1: arg_parse1
+* @arg_parse2: arge_parse2
 */
-void free_loop(char *cli_arg1, char *cli_arg2, char *cli_arg3,
-				char **arg_parse1, char **arg_parse2)
+void free_loop(char **cli_arg1, char **cli_arg2, char **cli_arg3,
+				char ***arg_parse1, char ***arg_parse2)
 {
-	free(cli_arg1);
-	free(cli_arg2);
-	free(cli_arg3);
+	free(*cli_arg1);
+	free(*cli_arg2);
+	free(*cli_arg3);
+	free(*arg_parse1);
+	free(*arg_parse2);
+
+	*cli_arg1 = NULL;
+	*cli_arg2 = NULL;
+	*cli_arg3 = NULL;
+	*arg_parse1 = NULL;
+	*arg_parse2 = NULL;
+}
+
+
+/**
+* free_exec - Frees memory in shell_loop
+* @cli_arg: cli_arg1
+* @arg_parse1: arg_parse1
+* @arg_parse2: arge_parse2
+*/
+void free_exec(char *cli_arg, char **arg_parse1,
+				char **arg_parse2)
+{
+	free(cli_arg);
 	free(arg_parse1);
 	free(arg_parse2);
 }
+

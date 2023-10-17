@@ -42,10 +42,9 @@ int shell_exit(char **argv, char **argv_tkn, int line_count)
 * @argv: Argument vector
 * @argv_tkn: Null-terminated list of commands and parameters
 * @line_count: Line count
-* @head: A pointer to the head of env_list
 * Return: 1 to keep shell in loop
 */
-int shell_cd(char **argv, char **argv_tkn, int line_count, env_list **head)
+int shell_cd(char **argv, char **argv_tkn, int line_count)
 {
 	char *home, *prev_dir;
 	char *cwd_p = malloc(PATH_MAX), *cwd_c = malloc(PATH_MAX);
@@ -57,16 +56,16 @@ int shell_cd(char **argv, char **argv_tkn, int line_count, env_list **head)
 
 	if (argv_tkn[1] == NULL || stringcompare(argv_tkn[1], "~") == 0)
 	{
-		home = shell_getenv(head, "HOME");
+		home = shell_getenv("HOME");
 		chdir(home);
-		shell_setenv(head, "OLDPWD", cwd_p, 1);
+		setenv("OLDPWD", cwd_p, 1);
 	}
 
 	else if (stringcompare(argv_tkn[1], "-") == 0)
 	{
-		prev_dir = shell_getenv(head, "OLDPWD");
+		prev_dir = shell_getenv("OLDPWD");
 		chdir(prev_dir);
-		shell_setenv(head, "OLDPWD", cwd_p, 1);
+		setenv("OLDPWD", cwd_p, 1);
 	}
 
 	else
@@ -74,11 +73,11 @@ int shell_cd(char **argv, char **argv_tkn, int line_count, env_list **head)
 		if (chdir(argv_tkn[1]) != 0)
 			cd_error_output(argv[0], argv_tkn, "can't cd to", line_count);
 		else
-			shell_setenv(head, "OLDPWD", cwd_p, 1);
+			setenv("OLDPWD", cwd_p, 1);
 	}
 
 	getcwd(cwd_c, PATH_MAX);
-	shell_setenv(head, "PWD", cwd_c, 1);
+	setenv("PWD", cwd_c, 1);
 
 	free(cwd_p);
 	free(cwd_c);
@@ -92,25 +91,23 @@ int shell_cd(char **argv, char **argv_tkn, int line_count, env_list **head)
  * @argv: Argument vector
  * @argv_tkn: Null-terminated list of commands and parameters
  * @line_count: Line count
- * @head: Pointer to the head of env_list
  * Return: Always 1
 */
-int env_builtin(char **argv, char **argv_tkn, int line_count, env_list **head)
+int env_builtin(char **argv, char **argv_tkn, int line_count)
 {
-	env_list *node_ptr = *head;
+	char **env_ptr = environ;
 
 	(void)argv_tkn;
 	(void)argv;
 	(void)line_count;
 
-	while (node_ptr != NULL)
+	while (*env_ptr)
 	{
-		cust_puts(node_ptr->var_name);
-		put_char('=');
-		cust_puts(node_ptr->var_value);
+		cust_puts(*env_ptr);
 		put_char('\n');
-		node_ptr = node_ptr->next;
+		env_ptr++;
 	}
+
 	return (1);
 }
 

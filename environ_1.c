@@ -2,20 +2,15 @@
 
 /**
 * shell_env - Retrieves a copy of the environ array
-* @head: A pointer to the head of env_list
 * Return: An array of strings of the environ
 */
-char **shell_env(env_list **head)
+char **shell_env(void)
 {
 	int no_of_env = 0, idx = 0;
 	char **envp_cpy;
-	env_list *node_ptr = *head;
 
-	while (node_ptr != NULL)
-	{
-		node_ptr = node_ptr->next;
+	while (environ[no_of_env] != NULL)
 		no_of_env++;
-	}
 
 	envp_cpy = (char **)malloc(sizeof(char *) * (no_of_env + 1));
 
@@ -25,22 +20,15 @@ char **shell_env(env_list **head)
 		exit(EXIT_FAILURE);
 	}
 
-	node_ptr = *head;
-
-	while (node_ptr != NULL)
+	while (environ[idx] != NULL)
 	{
-		envp_cpy[idx] = (char *)malloc(stringlength(node_ptr->var_name) +
-							stringlength(node_ptr->var_value) + 2);
+		envp_cpy[idx] = stringdup(environ[idx]);
 		if (envp_cpy[idx] == NULL)
 		{
-			perror("Failed to allocate memory for environ copy");
+			perror("Memory allocation failed for environ copy");
 			exit(EXIT_FAILURE);
 		}
-		stringcopy(envp_cpy[idx], node_ptr->var_name);
-		stringconcat(envp_cpy[idx], "=");
-		stringconcat(envp_cpy[idx], node_ptr->var_value);
 		idx++;
-		node_ptr = node_ptr->next;
 	}
 	envp_cpy[idx] = NULL;
 	return (envp_cpy);
@@ -51,21 +39,21 @@ char **shell_env(env_list **head)
 * shell_getenv - Retrieves the value of an environ variable by looping
 *                through the environ array.
 * @var_name: Environment variable prefix
-* @head: A pointer to the head of env_list
 * Return: The environment variable's value
 */
-char *shell_getenv(env_list **head, char *var_name)
+char *shell_getenv(char *var_name)
 {
-	env_list *node_ptr = *head;
+	int idx = 0;
 
 	if (!var_name || !environ)
 		return (NULL);
 
-	while (node_ptr != NULL)
+	while (environ[idx] != NULL)
 	{
-		if (stringcompare(node_ptr->var_name, var_name) == 0)
-			return (node_ptr->var_value);
-		node_ptr = node_ptr->next;
+		if (string_n_cmp(environ[idx], var_name,
+			stringlength(var_name)) == 0 && environ[idx][stringlength(var_name)] == '=')
+			return (environ[idx] + stringlength(var_name) + 1);
+		idx++;
 	}
 	return (NULL);
 }
@@ -73,93 +61,122 @@ char *shell_getenv(env_list **head, char *var_name)
 
 /**
 * shell_setenv - Creates or updates the value of an environment variable
-* @head: Pointer to the head of env_list linked list
 * @var_name: The environment variable to update or create
-* @var_value: The value to assign to the environment variable
+* @value: The value to assign to the environment variable
 * @flag: Flag. 1 means update value to new value. 0 means do not flag
 * Return: 0 on success or -1 if otherwise
 */
-int shell_setenv(env_list **head, char *var_name, char *var_value, int flag)
+int shell_setenv(char *var_name, char *value, int flag)
 {
-	env_list *node_ptr = *head, *prev_node = NULL, *new_var;
+	char *new_var, *existing;
 
-	while (node_ptr != NULL) /* Check if environment variable exists */
-	{
-		if (stringcompare(node_ptr->var_name, var_name) == 0)
-		{
-			if (!flag) /* If false then do nothing */
-				return (0);
+	if (var_name == NULL || value == NULL)
+		return (-1);
 
-			else /* If true then overwrite */
-			{
-				node_ptr->var_value = var_value;
-				return (0);
-			}
-		}
-		prev_node = node_ptr;
-		node_ptr = node_ptr->next;
-	}
+	/* Create string for environment variable */
+	new_var = create_env_string(var_name, value);
 
-	/* It does not exist. Create a new one */
-	new_var = (env_list *)malloc(sizeof(env_list));
 	if (new_var == NULL)
+		return (-1);
+
+	/* Check if the environment variable already exists */
+	existing = shell_getenv(var_name);
+
+	if (existing != NULL)
 	{
-		perror("Memory allocation failed");
+		/* If flag = 0, do nothing */
+		if (!flag)
+		{
+			free(new_var);
+			return (0);
+		}
+		/* If flag = 1, remove the existing variable */
+		shell_unsetenv(var_name);
+	}
+	/* Add the new environment variable */
+	if (add_shell_env(var_name, value) != 0)
+	{
+		free(new_var);
 		return (-1);
 	}
-	new_var->var_name = var_name;
-	new_var->var_value = var_value;
-	new_var->next = NULL;
-
-	if (prev_node != NULL)
-		prev_node->next = new_var;
-	else
-		*head = new_var;
 
 	return (0);
 }
 
 
 /**
- * env_list_init - Initializes env_list linked list
- * @environ: Array of environment variable strings
- * Return: A pointer to the env_list
+ * add_shell_env - Handles the addition or replacement of environment variables
+ * @var_name: Environment variable to add or replace
+ * @value: The environment variable's value
+ * Return: 0 on success or -1 if otherwise
 */
-env_list *env_list_init(char **environ)
+int add_shell_env(char *var_name, char *value)
 {
-	env_list *head = NULL, *node_ptr = NULL, *new_node = NULL;
-	char *env_ptr;
-	int idx = 0;
+	char *new_var, **new_environ;
+	int var_idx, i, env_count = 0;
 
-	while (environ[idx] != NULL)
+	if (!var_name || !value)
+		return (-1);
+	new_var = create_env_string(var_name, value); /* Create new env */
+
+	if (!new_var)
+		return (-1);
+	var_idx = check_env_exist(var_name); /* Check if env exists */
+
+	if (var_idx != 0) /* non-zero means exists so replace it */
 	{
-		new_node = (env_list *)malloc(sizeof(env_list));
-		if (new_node == NULL)
-		{
-			perror("Memory allocation failed");
-			exit(EXIT_FAILURE);
-		}
-
-		env_ptr = environ[idx];
-		new_node->var_name = strtok(env_ptr, "=");
-		new_node->var_value = strtok(NULL, "=");
-		new_node->next = NULL;
-
-		if (head == NULL)
-		{
-			head = new_node;
-			node_ptr = head;
-		}
-
-		else
-		{
-			node_ptr->next = new_node;
-			node_ptr = new_node;
-		}
-		idx++;
+		free(environ[var_idx]);
+		environ[var_idx] = new_var;
 	}
-	return (head);
+	else /* does not exist */
+	{
+		while (environ[env_count] != NULL) /* count number of environs */
+			env_count++;
+		new_environ = (char **)malloc((env_count + 2) * sizeof(char *));
+
+		if (!new_environ)
+		{
+			free(new_var);
+			return (-1);
+		}
+		/* Copy existing environs to new array */
+		for (i = 0 ; i < env_count ; i++)
+			new_environ[i] = environ[i];
+		/* Add new environ to end of array */
+		new_environ[env_count] = new_var;
+		new_environ[env_count + 1] = NULL;
+
+		free(environ);
+		environ = new_environ;  /* Replace old environ with new environ */
+	}
+	return (0);
 }
+
+
+/**
+* check_env_exist - Checks if environment variable exists
+* @var_name: Environment variable string
+* Return: i if env variable exists or 0 if otherwise
+*/
+int check_env_exist(char *var_name)
+{
+	int i;
+
+	if (var_name == NULL)
+		return (0);
+
+	 /* Check if env variable exists */
+	for (i = 0; environ[i] != NULL; i++)
+	{
+		if (string_n_cmp(environ[i], var_name, stringlength(var_name)) == 0 &&
+			environ[i][stringlength(var_name)] == '=')
+		{
+			return (i); /* Env variable exists */
+		}
+	}
+	return (0); /* Env variable does not exist */
+}
+
 
 
 

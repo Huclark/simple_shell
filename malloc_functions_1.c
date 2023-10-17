@@ -56,4 +56,20 @@ void *shell_realloc(void *prev_mem_ptr, unsigned int prev_size,
 }
 
 
-
+/**
+ * free_loop - Frees memory in shell_loop
+ * @cli_arg1: cli_arg1
+ * @cli_arg2: cli_arg2
+ * @cli_arg3: cli_arg3
+ * @arg_parse1: arg_parse1
+ * @arg_parse2: arge_parse2
+*/
+void free_loop(char *cli_arg1, char *cli_arg2, char *cli_arg3,
+				char **arg_parse1, char **arg_parse2)
+{
+	free(cli_arg1);
+	free(cli_arg2);
+	free(cli_arg3);
+	free(arg_parse1);
+	free(arg_parse2);
+}

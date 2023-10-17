@@ -25,31 +25,21 @@ typedef struct term_settings
 	struct termios original;
 } terminal_set;
 
-/**
- * struct env_list - Handles the environment variables
- * @var_name: Envionment variable name
- * @var_value: Environment variable value
- * @next: Pointer to next node or NULL
-*/
-typedef struct env_list
-{
-	char *var_name;
-	char *var_value;
-	struct env_list *next;
-} env_list;
-
 
 /* Custom prototype for Loop function */
-int shell_loop(char **argv, env_list **head);
+int shell_loop(char **argv);
 char *shell_getline(void);
-char **parse_line(char *cli_arg);
-int shell_exec(char **argv_tkn, char **argv, int line_count, env_list **head);
-int fork_cmd(char **argv_tkn, char **argv, int line_count, env_list **head);
+char **parse_line1(char *cli_arg);
+char **parse_line2(char *cli_arg);
+int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv, char *cli_arg3,
+				int line_count);
+int fork_cmd(char **argv_tkn, char **argv, int line_count);
 int shell_exit(char **argv, char **argv_tkn, int line_count);
-int shell_cd(char **argv, char **argv_tkn, int line_count, env_list **head);
+int shell_cd(char **argv, char **argv_tkn, int line_count);
 int child_process(char **argv_tkn, char **argv,
 					char *fullpath, int line_count);
-
+int interactive(char **argv);
+int non_interactive(char **argv);
 
 /* Custom prototypes for string functions */
 char *stringcopy(char *target, char *source);
@@ -68,38 +58,41 @@ char *itostr(int num);
 int atoi_(char *string);
 int is_digit(int ch);
 
-/* int word_counter(char *string, char *delim); */
-
 
 /* Custom prototypes for print functions */
 int put_char(char ch);
+int e_put_char(char ch);
 void cust_puts(char *string);
+void e_cust_puts(char *string);
 void error_output(char *prog_name, char **argv_tkn,
 					char *error_msg, int line_no);
 void exit_error_output(char *prog_name, char **argv_tkn,
 					char *error_msg, int line_no);
 void cd_error_output(char *prog_name, char **argv_tkn,
 					char *error_msg, int line_no);
-int print_numbers(int num_to_print);
+int print_numbers(int num_to_print, int file_desc);
 
 
 /* Custom prototypes for memory functions */
 void free_str(char **str);
 void *shell_realloc(void *prev_mem_ptr, unsigned int prev_size,
 					unsigned int curr_size);
+void free_loop(char *cli_arg1, char *cli_arg2, char *clin_arg3,
+				char **arg_parse1, char **arg_parse2);
 
 
 /* Custom prototypes for environment variables functions */
-env_list *env_list_init(char **environ);
-int shell_setenv(env_list **head, char *var_name, char *value, int flag);
-char **shell_env(env_list **head);
-char *shell_getenv(env_list **head, char *var_name);
+int shell_setenv(char *var_name, char *value, int flag);
+char **shell_env(void);
+char *shell_getenv(char *var_name);
 char *create_env_string(char *var_name, char *value);
 int shell_unsetenv(char *var_name);
-char *find_command(char **argv_tkn, env_list **head);
+char *find_command(char **argv_tkn);
 char *find_exec_in_path(char *dir, char *command);
-int env_builtin(char **argv, char **argv_tkn, int line_count, env_list **head);
+int env_builtin(char **argv, char **argv_tkn, int line_count);
 int find_env_idx(char *var_name);
+int add_shell_env(char *var_name, char *value);
+int check_env_exist(char *var_name);
 
 
 /* Custom prototypes for functions that handle terminal settings*/

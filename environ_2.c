@@ -70,12 +70,11 @@ int shell_unsetenv(char *var_name)
 /**
 * find_command - Searches PATH to find the full path to the executable command
 * @argv_tkn: Array of nulll-terminated tokens
-* @head: A pointer to the head of env_list
 * Return: The full path to command or Null if command is not found
 */
-char *find_command(char **argv_tkn, env_list **head)
+char *find_command(char **argv_tkn)
 {
-	char *cmd_dir, *cmd_path, *path_cpy, *path = shell_getenv(head, "PATH");
+	char *cmd_dir, *cmd_path, *path_cpy, *path = shell_getenv("PATH");
 
 	if (find_char(argv_tkn[0], '/') != NULL)
 	{

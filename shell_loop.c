@@ -6,49 +6,17 @@
  *              Displays type prompt again each time a
  *               command has been executed.
  * @argv: Argument vector
- * @head: Pointer to the head of env_list
  * Return: Loop status
 */
-int shell_loop(char **argv, env_list **head)
+int shell_loop(char **argv)
 {
-	char **arg_parse, *cli_arg;
-	int loop_status, line_count = 1;
-
 	if (isatty(STDIN_FILENO))
 	{
-		do {
-		cust_puts("-->> ");
-		fflush(stdout);
-		cli_arg = shell_getline();
-		arg_parse = parse_line(cli_arg);
-		if (stringcompare(arg_parse[0], "exit") == 0)
-			loop_status = shell_exit(argv, arg_parse, line_count);
-		else
-			loop_status = shell_exec(arg_parse, argv, line_count, head);
-		free(cli_arg);
-		free(arg_parse);
-		line_count++;
-		} while (loop_status == 1);
-		return (loop_status);
+		return (interactive(argv));
 	}
 	else
 	{
-		cli_arg = shell_getline();
-		arg_parse = parse_line(cli_arg);
-		if (stringcompare(arg_parse[0], "exit") == 0)
-		{
-			loop_status = shell_exit(argv, arg_parse, line_count);
-			free(cli_arg);
-			free(arg_parse);
-			return (loop_status);
-		}
-		else
-		{
-			shell_exec(arg_parse, argv, line_count, head);
-			free(cli_arg);
-			free(arg_parse);
-			return (EXIT_SUCCESS);
-		}
+		return (non_interactive(argv));
 	}
 }
 
@@ -102,12 +70,12 @@ char *shell_getline(void)
 
 
 /**
- * parse_line - Separates the command string into
+ * parse_line1 - Separates the command string into
  *              commands and parameters
  * @cli_arg: Command string from stdin
  * Return: A null-terminated array of token strings.
 */
-char **parse_line(char *cli_arg)
+char **parse_line1(char *cli_arg)
 {
 	char **tkn_buf, **tkn_cpy, *tkn_str;
 	unsigned int buflength = TOKEN_BUFFER, ptn_size = 0;
@@ -149,13 +117,15 @@ char **parse_line(char *cli_arg)
 
 /**
  * shell_exec - Executes the parsed command
- * @argv_tkn: Null-terminated list of commands and parameters
+ * @argv_tkn1: Null-terminated array without ':'
+ * @argv_tkn2: NUll_terminated array which handles ':'
  * @argv: Argument vector
+ * @cli_arg: String input from getline
  * @line_count: The number of lines processed
- * @head: Pointer to the head of env_list
  * Return: Always 1
 */
-int shell_exec(char **argv_tkn, char **argv, int line_count, env_list **head)
+int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
+				char *cli_arg, int line_count)
 {
 	int idx = 0, builtins_count;
 
@@ -163,25 +133,35 @@ int shell_exec(char **argv_tkn, char **argv, int line_count, env_list **head)
 		"cd",
 		"env",
 	};
-
-	int (*bltin_function[])(char **, char **, int, env_list **) = {
+	int (*bltin_function[])(char **, char **, int) = {
 		&shell_cd,
 		&env_builtin,
 	};
 
 	/* User entered an empty comand (empty string or white space) */
-	if (argv_tkn[0] == NULL)
+	if (cli_arg == NULL)
 		return (1);
 
 	builtins_count = sizeof(builtins) / sizeof(char *);
 
 	while (idx < builtins_count)
 	{
-		if (stringcompare(argv_tkn[0], builtins[idx]) == 0)
-			return ((*bltin_function[idx])(argv, argv_tkn, line_count, head));
+		if (stringcompare(argv_tkn1[0], builtins[idx]) == 0)
+			return ((*bltin_function[idx])(argv, argv_tkn1, line_count));
 		idx++;
 	}
-	return (fork_cmd(argv_tkn, argv, line_count, head));
+
+	if (find_char(cli_arg, ';') != NULL)
+	{
+		while (*argv_tkn2)
+		{
+			fork_cmd(parse_line1(*argv_tkn2), argv, line_count);
+			argv_tkn2++;
+		}
+	}
+	else
+		fork_cmd(argv_tkn1, argv, line_count);
+	return (1);
 }
 
 
@@ -191,24 +171,17 @@ int shell_exec(char **argv_tkn, char **argv, int line_count, env_list **head)
  * @argv_tkn: Null-terminated list of commands and parameters
  * @argv: Argument vector
  * @line_count: The number of lines processed
- * @head: A pointer to the head of env_list
  * Return: 1 on success, 0 if otherwise
 */
-int fork_cmd(char **argv_tkn, char **argv, int line_count, env_list **head)
+int fork_cmd(char **argv_tkn, char **argv, int line_count)
 {
 	int ret_status;
-	char *fullpath = find_command(argv_tkn, head);
+	char *fullpath = find_command(argv_tkn);
 	pid_t child_process;
 
 	if (fullpath == NULL)
 	{
-		if (isatty(STDIN_FILENO))
-		{
-			cust_puts(argv[0]);
-			cust_puts(": No such file or directory\n");
-		}
-		else
-			error_output(argv[0], argv_tkn, "not found", line_count);
+		error_output(argv[0], argv_tkn, "not found", line_count);
 		return (1);
 	}
 
@@ -218,7 +191,7 @@ int fork_cmd(char **argv_tkn, char **argv, int line_count, env_list **head)
 		perror("Fork failed");
 	if (child_process == 0)
 	{
-		if (execve(fullpath, argv_tkn, environ) == -1)
+		if (execve(fullpath, argv_tkn, shell_env()) == -1)
 		{
 			if (errno == EACCES)
 				perror("Permission denied for execve");

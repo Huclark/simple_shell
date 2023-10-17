@@ -68,38 +68,34 @@ char *shell_getenv(char *var_name)
 */
 int shell_setenv(char *var_name, char *value, int flag)
 {
-	char *new_var, *existing;
+	char *variable;
 
-	if (var_name == NULL || value == NULL)
-		return (-1);
-
-	/* Create string for environment variable */
-	new_var = create_env_string(var_name, value);
-
-	if (new_var == NULL)
-		return (-1);
-
-	/* Check if the environment variable already exists */
-	existing = shell_getenv(var_name);
-
-	if (existing != NULL)
+	if (var_name == NULL || var_name[0] == '\0' ||
+		find_char(var_name, '=') != NULL)
 	{
-		/* If flag = 0, do nothing */
-		if (!flag)
-		{
-			free(new_var);
-			return (0);
-		}
-		/* If flag = 1, remove the existing variable */
-		shell_unsetenv(var_name);
-	}
-	/* Add the new environment variable */
-	if (add_shell_env(var_name, value) != 0)
-	{
-		free(new_var);
+		perror("Variable name is invalid");
 		return (-1);
 	}
+	if (shell_getenv(var_name) != NULL && !flag)
+		return (0);
 
+	variable = malloc(stringlength(var_name) + stringlength(value) + 2);
+	if (variable == NULL)
+	{
+		perror("Failed to allocate memory");
+		return (-1);
+	}
+	stringcopy(variable, var_name);
+	stringconcat(variable, "=");
+	stringconcat(variable, value);
+
+	if (putenv(variable) != 0)
+	{
+		perror("Failed to set the variable");
+		free(variable);
+		return (-1);
+	}
+	free(variable);
 	return (0);
 }
 

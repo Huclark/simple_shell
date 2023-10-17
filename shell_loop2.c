@@ -11,7 +11,7 @@ char **parse_line2(char *cli_arg)
 	char **tkn_buf, **tkn_cpy, *tkn_str;
 	unsigned int buflength = TOKEN_BUFFER, ptn_size = 0;
 
-	if (find_char(cli_arg, ';') == NULL)
+	if (find_char(cli_arg, ';') == NULL || cli_arg == NULL)
 		return (NULL);
 
 	tkn_buf = malloc(sizeof(char *) * buflength);

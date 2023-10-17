@@ -112,5 +112,51 @@ int env_builtin(char **argv, char **argv_tkn, int line_count)
 }
 
 
+/**
+ * set_env_builtin - setenv built-in command which adds or modifies
+ *                   an environment variable
+ * @argv: Argument vector
+ * @argv_tkn: Null-terminated list of commands and parameters
+ * @line_count: Line count
+ * Return: Always 1
+*/
+int set_env_builtin(char **argv, char **argv_tkn, int line_count)
+{
+	if (argv_tkn[1] == NULL || argv_tkn[2] == NULL)
+	{
+		error_output(argv[0], argv_tkn, "Usage: setenv VARIABLE VALUE", line_count);
+		return (1);
+	}
+
+	if (setenv(argv_tkn[1], argv_tkn[2], 1) != 0)
+	{
+		perror("Failed to set environment variable");
+		return (1);
+	}
+	return (1);
+}
 
 
+/**
+ * unset_env_builtin - unsetenv built-in command which removes
+ *                     an environment variable
+ * @argv: Argument vector
+ * @argv_tkn: Null-terminated list of commands and parameters
+ * @line_count: Line count
+ * Return: Always 1
+*/
+int unset_env_builtin(char **argv, char **argv_tkn, int line_count)
+{
+	if (argv_tkn[1] == NULL)
+	{
+		error_output(argv[0], argv_tkn, "Usage: setenv VARIABLE VALUE", line_count);
+		return (1);
+	}
+
+	if (unsetenv(argv_tkn[1]) != 0)
+	{
+		perror("Failed to set environment variable");
+		return (1);
+	}
+	return (1);
+}

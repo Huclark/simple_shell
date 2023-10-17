@@ -34,8 +34,6 @@ char **parse_line2(char *cli_arg);
 int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv, char *cli_arg3,
 				int line_count);
 int fork_cmd(char **argv_tkn, char **argv, int line_count);
-int shell_exit(char **argv, char **argv_tkn, int line_count);
-int shell_cd(char **argv, char **argv_tkn, int line_count);
 int child_process(char **argv_tkn, char **argv,
 					char *fullpath, int line_count);
 int interactive(char **argv);
@@ -44,6 +42,13 @@ ssize_t _getline(char **buffer, size_t *n, int file_desc);
 ssize_t fetch_input(int file_desc);
 ssize_t refill_line(char **buffer, size_t *n);
 
+
+/* Custom prototypes for built-in functions */
+int shell_exit(char **argv, char **argv_tkn, int line_count);
+int shell_cd(char **argv, char **argv_tkn, int line_count);
+int env_builtin(char **argv, char **argv_tkn, int line_count);
+int set_env_builtin(char **argv, char **argv_tkn, int line_count);
+int unset_env_builtin(char **argv, char **argv_tkn, int line_count);
 
 
 /* Custom prototypes for string functions */
@@ -91,13 +96,13 @@ void free_exec(char *cli_arg, char **arg_parse1,
 
 /* Custom prototypes for environment variables functions */
 int shell_setenv(char *var_name, char *value, int flag);
+int shell_putenv(char *variable);
 char **shell_env(void);
 char *shell_getenv(char *var_name);
 char *create_env_string(char *var_name, char *value);
 int shell_unsetenv(char *var_name);
 char *find_command(char **argv_tkn);
 char *find_exec_in_path(char *dir, char *command);
-int env_builtin(char **argv, char **argv_tkn, int line_count);
 int find_env_idx(char *var_name);
 int add_shell_env(char *var_name, char *value);
 int check_env_exist(char *var_name);

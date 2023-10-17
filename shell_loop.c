@@ -28,8 +28,8 @@ int shell_loop(char **argv)
 char *shell_getline(void)
 {
 	unsigned int buflength = READ_BUFFER, position_size = 0;
-	char *line_buffer = malloc(sizeof(char) * buflength);
 	int ch;
+	char *line_buffer = malloc(sizeof(char) * buflength);
 
 	if (line_buffer == NULL) /* If malloc fails */
 	{
@@ -38,12 +38,14 @@ char *shell_getline(void)
 	}
 	while (1)
 	{
-		/* Read a character */
 		ch = sh_getchar();
-
 		if (ch == EOF)
 			exit(EXIT_SUCCESS);
-
+		if (ch == '\n' && position_size == 0)
+		{
+			free(line_buffer);
+			return (NULL);
+		}
 		else if (ch == '\n')
 		{
 			line_buffer[position_size] = '\0';
@@ -59,7 +61,6 @@ char *shell_getline(void)
 		buflength += READ_BUFFER;
 		line_buffer = shell_realloc(line_buffer, buflength,
 									sizeof(char) * buflength);
-
 		if (line_buffer == NULL)
 		{
 			perror("Failed to allocate memory");
@@ -79,6 +80,9 @@ char **parse_line1(char *cli_arg)
 {
 	char **tkn_buf, **tkn_cpy, *tkn_str;
 	unsigned int buflength = TOKEN_BUFFER, ptn_size = 0;
+
+	if (cli_arg == NULL)
+		return (NULL);
 
 	tkn_buf = malloc(sizeof(char *) * buflength);
 
@@ -132,12 +136,15 @@ int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 	char *builtins[] = {
 		"cd",
 		"env",
+		"setenv",
+		"unsetenv",
 	};
 	int (*bltin_function[])(char **, char **, int) = {
 		&shell_cd,
 		&env_builtin,
+		&set_env_builtin,
+		&unset_env_builtin,
 	};
-
 	/* User entered an empty comand (empty string or white space) */
 	if (cli_arg == NULL)
 		return (1);
@@ -153,7 +160,6 @@ int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 		}
 		idx++;
 	}
-
 	if (find_char(cli_arg, ';') != NULL)
 	{
 		while (*argv_tkn2)
@@ -164,7 +170,6 @@ int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 	}
 	else
 		fork_cmd(argv_tkn1, argv, line_count);
-
 	return (1);
 }
 

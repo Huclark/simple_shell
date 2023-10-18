@@ -40,12 +40,11 @@ char *shell_getline(void)
 	{
 		ch = sh_getchar();
 		if (ch == EOF)
-			exit(EXIT_SUCCESS);
-		if (ch == '\n' && position_size == 0)
 		{
 			free(line_buffer);
-			return (NULL);
+			exit(EXIT_SUCCESS);
 		}
+
 		else if (ch == '\n')
 		{
 			line_buffer[position_size] = '\0';

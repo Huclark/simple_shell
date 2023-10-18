@@ -17,7 +17,7 @@ This project is a simple implementation of a `shell` in C. It illustrates how th
 
 ## Objectives
 - Develop a custom `simple shell` that emulates the functionality
-of the original `shell`.
+of the original `shell`
 - Deepen your understanding of the `C-programming language` and `Shell`.
 - What is a `pid` and a `ppid`?
 - How to manipulate the environment of the current process
@@ -90,7 +90,7 @@ The only prerequisite is to clone this repo. However, you need a good understand
 
 ## Limitations
 This is a school project and it is built to meet the requirements of the project. It has many limitations including:
-- Only built-ins are `cd`, `exit`, `env`
+- Only built-ins are `cd`, `exit`, `env`.
 
 ## Contributions
 This is a team project with the following contributors:

@@ -42,12 +42,13 @@ int stringcompare(char *string1, char *string2)
 	while (string1[idx] != '\0' && string2[idx] != '\0')
 	{
 		if (string1[idx] != string2[idx])
-		{
-			if (string1[idx] < string2[idx] || string1[idx] > string2[idx])
-				return (string1[idx] - string2[idx]);
-		}
+			return (string1[idx] - string2[idx]);
+
 		idx += 1;
 	}
+	if (string1[idx] != '\0' || string2[idx] != '\0')
+		return (string1[idx] - string2[idx]);
+
 	return (0);
 }
 

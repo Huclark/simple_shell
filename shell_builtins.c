@@ -46,40 +46,37 @@ int shell_exit(char **argv, char **argv_tkn, int line_count)
 */
 int shell_cd(char **argv, char **argv_tkn, int line_count)
 {
-	char *dir, *prev_dir = getenv("OLDPWD"), *home = getenv("HOME");
-	char cwd_c[READ_BUFFER];
+	char *home = NULL, *prev_dir = NULL;
+	char cwd_p[READ_BUFFER], cwd_c[READ_BUFFER], cwd_prevdir[READ_BUFFER];
 
-	if (prev_dir == NULL || home == NULL)
-	{
-		perror("getenv: Failed to fetch environment value");
+	if (cwd_p == NULL || cwd_c == NULL)
 		return (1);
-	}
 
+	getcwd(cwd_p, sizeof(cwd_p));
 	if (argv_tkn[1] == NULL || stringcompare(argv_tkn[1], "~") == 0)
-		dir = home;
-
+	{
+		home = getenv("HOME");
+		chdir(home);
+		setenv("OLDPWD", cwd_p, 1);
+	}
 	else if (stringcompare(argv_tkn[1], "-") == 0)
 	{
-		dir = prev_dir;
-		cust_puts(dir);
+		prev_dir = getenv("OLDPWD");
+		chdir(prev_dir);
+		getcwd(cwd_prevdir, sizeof(cwd_prevdir));
+		cust_puts(cwd_prevdir);
 		put_char('\n');
+		setenv("OLDPWD", cwd_p, 1);
 	}
-
 	else
-		dir = argv_tkn[1];
-
-	if (chdir(dir) != 0)
 	{
-		cd_error_output(argv[0], argv_tkn, "can't cd to", line_count);
-		return (1);
+		if (chdir(argv_tkn[1]) != 0)
+			cd_error_output(argv[0], argv_tkn, "can't cd to", line_count);
+		else
+			setenv("OLDPWD", cwd_p, 1);
 	}
-
-	setenv("OLDPWD", getenv("PWD"), 1);
-
-	if (getcwd(cwd_c, sizeof(cwd_c)) != NULL)
-		setenv("PWD", cwd_c, 1);
-	else
-		perror("getcwd: Could not fetch current working directory");
+	getcwd(cwd_c, sizeof(cwd_c));
+	setenv("PWD", cwd_c, 1);
 
 	return (1);
 }

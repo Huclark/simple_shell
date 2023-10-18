@@ -200,7 +200,7 @@ int fork_cmd(char **argv_tkn, char **argv, int line_count)
 		perror("Fork failed");
 	if (child_process == 0)
 	{
-		if (execve(fullpath, argv_tkn, shell_env()) == -1)
+		if (execve(fullpath, argv_tkn, environ) == -1)
 		{
 			if (errno == EACCES)
 				perror("Permission denied for execve");

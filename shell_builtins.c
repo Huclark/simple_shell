@@ -56,14 +56,14 @@ int shell_cd(char **argv, char **argv_tkn, int line_count)
 
 	if (argv_tkn[1] == NULL || stringcompare(argv_tkn[1], "~") == 0)
 	{
-		home = shell_getenv("HOME");
+		home = getenv("HOME");
 		chdir(home);
 		setenv("OLDPWD", cwd_p, 1);
 	}
 
 	else if (stringcompare(argv_tkn[1], "-") == 0)
 	{
-		prev_dir = shell_getenv("OLDPWD");
+		prev_dir = getenv("OLDPWD");
 		chdir(prev_dir);
 		setenv("OLDPWD", cwd_p, 1);
 	}

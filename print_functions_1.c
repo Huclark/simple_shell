@@ -7,9 +7,9 @@
 */
 int put_char(char ch)
 {
-	int ret_value = write(1, &ch, 1);
+        int ret_value = write(1, &ch, 1);
 
-	return (ret_value);
+        return (ret_value);
 }
 
 
@@ -20,9 +20,9 @@ int put_char(char ch)
 */
 int e_put_char(char ch)
 {
-	int ret_value = write(2, &ch, 1);
+        int ret_value = write(2, &ch, 1);
 
-	return (ret_value);
+        return (ret_value);
 }
 
 
@@ -33,15 +33,15 @@ int e_put_char(char ch)
 */
 void cust_puts(char *string)
 {
-	int idx = 0;
+        int idx = 0;
 
-	if (string == NULL)
-		return;
-	while (string[idx] != '\0')
-	{
-		put_char(string[idx]);
-		idx += 1;
-	}
+        if (string == NULL)
+                return;
+        while (string[idx] != '\0')
+        {
+                put_char(string[idx]);
+                idx += 1;
+        }
 }
 
 
@@ -52,15 +52,15 @@ void cust_puts(char *string)
 
 void e_cust_puts(char *string)
 {
-	int idx = 0;
+        int idx = 0;
 
-	if (string == NULL)
-		return;
-	while (string[idx] != '\0')
-	{
-		e_put_char(string[idx]);
-		idx += 1;
-	}
+        if (string == NULL)
+                return;
+        while (string[idx] != '\0')
+        {
+                e_put_char(string[idx]);
+                idx += 1;
+        }
 }
 
 
@@ -72,37 +72,35 @@ void e_cust_puts(char *string)
  */
 int print_numbers(int num_to_print, int file_desc)
 {
-	int idx, __counter = 0;
-	unsigned int absolute, curr_num;
-	int (*putchar_ptr)(char) = put_char;
+        int idx, __counter = 0;
+        unsigned int absolute, curr_num;
+        int (*putchar_ptr)(char) = put_char;
 
-	if (file_desc == STDERR_FILENO)
-		putchar_ptr = e_put_char;
+        if (file_desc == STDERR_FILENO)
+                putchar_ptr = e_put_char;
 
-	if (num_to_print < 0)
-	{
-		absolute = -num_to_print;
-		putchar_ptr('-');
-		__counter++;
-	}
-	else
-		absolute = num_to_print;
-	curr_num = absolute;
-	for (idx = 1000000000; idx > 1; idx /= 10)
-	{
-		if (absolute / idx)
-		{
-			putchar_ptr('0' + curr_num / idx);
-			__counter++;
-		}
-		curr_num %= idx;
-	}
-	putchar_ptr('0' + curr_num);
-	__counter++;
+        if (num_to_print < 0)
+        {
+                absolute = -num_to_print;
+                putchar_ptr('-');
+                __counter++;
+        }
+        else
+                absolute = num_to_print;
+        curr_num = absolute;
+        for (idx = 1000000000; idx > 1; idx /= 10)
+        {
+                if (absolute / idx)
+                {
+                        putchar_ptr('0' + curr_num / idx);
+                        __counter++;
+                }
+                curr_num %= idx;
+        }
+        putchar_ptr('0' + curr_num);
+        __counter++;
 
-	return (__counter);
+        return (__counter);
 }
-
-
 
 

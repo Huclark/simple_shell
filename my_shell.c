@@ -9,7 +9,8 @@
 
 int main(int argc, char **argv)
 {
-	(void)argc;
+        (void)argc;
 
-	return (shell_loop(argv));
+        return (shell_loop(argv));
 }
+

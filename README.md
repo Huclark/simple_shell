@@ -64,7 +64,7 @@ of the original `shell`.
 - `write` (man 2 write)
 
 ## Prerequisites
-The only prerquisite is to clone this repo. However, you need a good understanding of the following:
+The only prerequisite is to clone this repo. However, you need a good understanding of the following:
 - [Pointers & Arrays]
 - [Structures & Typedef]
 - [Function Pointers]
@@ -90,7 +90,7 @@ The only prerquisite is to clone this repo. However, you need a good understandi
 
 ## Limitations
 This is a school project and it is built to meet the requirements of the project. It has many limitations including:
-- Only built-ins are `cd`, `exit`, `env`
+- Only built-ins are `cd`, `exit`, `env`.
 
 ## Contributions
 This is a team project with the following contributors:

@@ -132,6 +132,7 @@ int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 				char *cli_arg, int line_count)
 {
 	int idx = 0, builtins_count, status;
+	char **tkn;
 
 	char *builtins[] = {
 		"cd",
@@ -145,12 +146,9 @@ int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 		&set_env_builtin,
 		&unset_env_builtin,
 	};
-	/* User entered an empty comand (empty string or white space) */
 	if (cli_arg == NULL)
 		return (1);
-
 	builtins_count = sizeof(builtins) / sizeof(char *);
-
 	while (idx < builtins_count)
 	{
 		if (stringcompare(argv_tkn1[0], builtins[idx]) == 0)
@@ -164,7 +162,9 @@ int shell_exec(char **argv_tkn1, char **argv_tkn2, char **argv,
 	{
 		while (*argv_tkn2)
 		{
-			fork_cmd(parse_line1(*argv_tkn2), argv, line_count);
+			tkn = parse_line1(*argv_tkn2);
+			fork_cmd(tkn, argv, line_count);
+			free(tkn);
 			argv_tkn2++;
 		}
 	}

@@ -1,70 +1,106 @@
 #include "shell.h"
 
 /**
-* shell_exit - Handles the exit built-in command
-* @argv_tkn: Null-terminated list of commands and parameters
-* Return: 0 to exit shell
+* put_char - Prints a char character to standard output
+* @ch: The character to print
+* Return: 1 on success and -1 on failure
 */
-int shell_exit(char **argv_tkn)
+int put_char(char ch)
 {
-	(void)argv_tkn;
-	return (0);
+        int ret_value = write(1, &ch, 1);
+
+        return (ret_value);
 }
 
 
 /**
-* shell_cd - Handles the cd built-in command
-* @argv_tkn: Null-terminated list of commands and parameters
-* Return: 1 to keep shell in loop
+* e_put_char - Prints a char character to standard error
+* @ch: The character to print
+* Return: 1 on success and -1 on failure
 */
-int shell_cd(char **argv_tkn)
+int e_put_char(char ch)
 {
-	/* const char *home, *prev_dir;
+        int ret_value = write(2, &ch, 1);
 
-	char *cwd;
+        return (ret_value);
+}
 
-	if (argv_tkn[1] == NULL || stringcompare(argv_tkn[1], "~") == 0)
-	{
-		home = shell_getenv("HOME");
-		if (home == NULL)
-			perror("HOME environment variable not set");
-		else
-		{
-			if (chdir(home) != 0)
-				perror("Error");
-		}
-	}
-	else if (stringcompare(argv_tkn[1], "-") == 0)
-	{
-		prev_dir = shell_getenv("OLDPWD");
-		if (prev_dir == NULL)
-			perror("OLDPWD environment variable not set");
-		else
-			if (chdir(prev_dir) != 0)
-				perror("Error");
-	}
-	else
-	{
-		if (chdir(argv_tkn[1]) != 0)
-			perror("Error");
-	}
-	cwd = getcwd(NULL, 0);
-	if (cwd == NULL)
-		perror("Error");
-	else
-	{
-		if (shell_setenv("PWD", cwd, 1) != 0)
-			perror("Error");
-		free(cwd);
-	} */
-	if (argv_tkn[1] == NULL)
-		perror("expected argument to cd");
-	else
-	{
-		if (chdir(argv_tkn[1]) != 0)
-			perror("error");
-	}
-	return (1);
+
+
+/**
+ * cust_puts - replicates the puts function
+ * @string: string input to print
+*/
+void cust_puts(char *string)
+{
+        int idx = 0;
+
+        if (string == NULL)
+                return;
+        while (string[idx] != '\0')
+        {
+                put_char(string[idx]);
+                idx += 1;
+        }
+}
+
+
+/**
+ * e_cust_puts - replicates the puts function
+ * @string: string input to print
+*/
+
+void e_cust_puts(char *string)
+{
+        int idx = 0;
+
+        if (string == NULL)
+                return;
+        while (string[idx] != '\0')
+        {
+                e_put_char(string[idx]);
+                idx += 1;
+        }
+}
+
+
+/**
+ * print_numbers - function prints a decimal (integer) number (base 10)
+ * @num_to_print: the num_to_print
+ * @file_desc: file stream
+ * Return: number of characters printed
+ */
+int print_numbers(int num_to_print, int file_desc)
+{
+        int idx, __counter = 0;
+        unsigned int absolute, curr_num;
+        int (*putchar_ptr)(char) = put_char;
+
+        if (file_desc == STDERR_FILENO)
+                putchar_ptr = e_put_char;
+
+        if (num_to_print < 0)
+        {
+                absolute = -num_to_print;
+                putchar_ptr('-');
+                __counter++;
+        }
+        else
+                absolute = num_to_print;
+        curr_num = absolute;
+        for (idx = 1000000000; idx > 1; idx /= 10)
+        {
+                if (absolute / idx)
+                {
+                        putchar_ptr('0' + curr_num / idx);
+                        __counter++;
+                }
+                curr_num %= idx;
+        }
+        putchar_ptr('0' + curr_num);
+        __counter++;
+
+        return (__counter);
 }
 
 

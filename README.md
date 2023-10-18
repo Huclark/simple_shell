@@ -64,7 +64,7 @@ of the original `shell`.
 - `write` (man 2 write)
 
 ## Prerequisites
-The only prerquisite is to clone this repo. However, you need a good understanding of the following:
+The only prerequisite is to clone this repo. However, you need a good understanding of the following:
 - [Pointers & Arrays]
 - [Structures & Typedef]
 - [Function Pointers]

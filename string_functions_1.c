@@ -39,6 +39,14 @@ int stringcompare(char *string1, char *string2)
 {
 	int idx = 0;
 
+	if (string1 == NULL || string2 == NULL)
+	{
+		if (string1 == NULL && string2 == NULL)
+			return (0);
+		else
+			return (-1);
+	}
+
 	while (string1[idx] != '\0' && string2[idx] != '\0')
 	{
 		if (string1[idx] != string2[idx])

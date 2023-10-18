@@ -57,7 +57,6 @@ int shell_cd(char **argv, char **argv_tkn, int line_count)
 	{
 		home = getenv("HOME");
 		chdir(home);
-		setenv("OLDPWD", cwd_p, 1);
 	}
 	else if (stringcompare(argv_tkn[1], "-") == 0)
 	{
@@ -66,15 +65,13 @@ int shell_cd(char **argv, char **argv_tkn, int line_count)
 		getcwd(cwd_prevdir, sizeof(cwd_prevdir));
 		cust_puts(cwd_prevdir);
 		put_char('\n');
-		setenv("OLDPWD", cwd_p, 1);
 	}
 	else
 	{
 		if (chdir(argv_tkn[1]) != 0)
 			cd_error_output(argv[0], argv_tkn, "can't cd to", line_count);
-		else
-			setenv("OLDPWD", cwd_p, 1);
 	}
+	setenv("OLDPWD", cwd_p, 1);
 	getcwd(cwd_c, sizeof(cwd_c));
 	setenv("PWD", cwd_c, 1);
 

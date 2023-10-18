@@ -17,7 +17,7 @@ This project is a simple implementation of a `shell` in C. It illustrates how th
 
 ## Objectives
 - Develop a custom `simple shell` that emulates the functionality
-of the original `shell`
+of the original `shell`.
 - Deepen your understanding of the `C-programming language` and `Shell`.
 - What is a `pid` and a `ppid`?
 - How to manipulate the environment of the current process

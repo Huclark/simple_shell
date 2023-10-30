@@ -94,4 +94,3 @@ void free_exec(char *cli_arg, char **arg_parse1,
 	free(arg_parse1);
 	free(arg_parse2);
 }
-
